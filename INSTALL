@@ -35,3 +35,14 @@ Example:
 Add new rule or link symbolic data directory in your web server:
 
     /path/trytond/data/galatea galatea-static
+
+PIL
+---
+
+If you get PIL error: decoder JPEG not available PIL, reinstall PIL:
+
+    # install libjpeg-dev with apt
+    sudo apt-get install libjpeg-dev
+
+    # reinstall pillow
+    pip install -I pillow

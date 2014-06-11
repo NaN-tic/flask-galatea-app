@@ -4,7 +4,7 @@
 import os
 import ConfigParser
 
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, send_from_directory
 from flask.ext.babel import Babel, gettext as _
 
 def get_config():
@@ -60,6 +60,8 @@ from galatea.tryton import tryton
 # register Blueprints - modules
 from galatea import galatea
 app.register_blueprint(galatea, url_prefix='/<lang>')
+from galatea_file import galatea_file
+app.register_blueprint(galatea_file)
 
 # context procesors and filters
 import context_processors
@@ -95,6 +97,10 @@ def server_error(e):
 def index():
     '''Home'''
     return render_template('index.html')
+
+@app.route('/media/cache/<filename>')
+def media_file(filename):
+    return send_from_directory(app.config['MEDIA_CACHE_FOLDER'], filename)
 
 if __name__ == "__main__":
     app.run()

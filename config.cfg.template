@@ -10,22 +10,31 @@ BASE_URL = 'http://localhost:5000'
 AUTHOR = 'Zikzakmedia'
 SECRET_KEY = '1234567890'
 
+MEDIA_FOLDER = '/home/www/media'
+MEDIA_URL = '/media/'
+MEDIA_CACHE_FOLDER = '/home/www/media/cache'
+MEDIA_CACHE_URL = '/media/cache/'
+
 ACTIVE_LOGIN = True
 ACTIVE_REGISTRATION = True
 LEN_PASSWORD = 6
+REGISTRATION_VAT = True
 
 TRYTON_DATABASE = 'tryton_database'
 TRYTON_USER = '1'
 TRYTON_CONFIG = '/etc/trytond.conf'
 
 TRYTON_GALATEA_SITE = 1
+TRYTON_DATA_PATH = '/home/trytondata/database'
 TRYTON_SALE_SHOPS = [1]
+TRYTON_ATTACHMENT_RESOURCE = ['product.template', 'sale.sale']
 TRYTON_PAGINATION_BLOG_LIMIT = 20
 TRYTON_PAGINATION_CATALOG_LIMIT = 20
 
 TRYTON_CATALOG_GUEST_PRICE = True
 TRYTON_CATALOG_LOGIN_PRICE = True
 TRYTON_CATALOG_MANAGER_PRICE = True
+TRYTON_CATALOG_BASE_IMAGE = '/static/catalog-base.png'
 
 MAIL_SERVER = default 'localhost'
 MAIL_PORT = default 25
