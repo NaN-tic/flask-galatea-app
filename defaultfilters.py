@@ -3,6 +3,7 @@
 #the full copyright notices and license terms.
 from flask import current_app
 from jinja2 import evalcontextfilter, Markup, escape
+from wikimarkup import parse as wikiparse
 
 import re
 import os
@@ -93,3 +94,8 @@ def price(price):
         decimals = p[1][:2]
 
     return '%s<span class="price-decimals">.%s</span>' % (p[0], decimals)
+
+@current_app.template_filter()
+def wikimarkup(text, show_toc=False):
+    '''Return html text from wiki format'''
+    return wikiparse(text, show_toc)
