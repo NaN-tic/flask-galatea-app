@@ -133,4 +133,38 @@ def cms_processor():
             return True
         return show_price
 
-    return dict(cms_menu=menu, cms_block=block, show_price=show_price)
+    def catalog_menu(slug=None):
+        """
+        Return object values catalog menu by slug
+        
+        HTML usage in template:
+
+        {% set menus=catalog_menu('slug') %}
+        {% if menus %}
+            {% for menu in menus %}
+                <a href="{{ menu.slug }}" alt="{{ menu.name }}">{{ menu.name }}</a>
+            {% endfor %}
+        {% endif %}
+        """
+        if not slug:
+            return []
+
+        Menu = tryton.pool.get('esale.catalog.menu')
+
+        # Search by code
+        menus = Menu.search([('slug', '=', slug)])
+        if not menus:
+            return []
+        menu, = menus
+
+        def get_menus(menu):
+
+            childs = []
+            for m in menu.childs:
+                childs.append(get_menus(m))
+            return {'name': menu.name, 'slug': menu.slug, 'childs': childs}
+        menu = get_menus(menu)
+
+        return menu['childs']
+
+    return dict(cms_menu=menu, cms_block=block, show_price=show_price, catalog_menu=catalog_menu)
