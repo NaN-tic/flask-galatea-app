@@ -80,3 +80,16 @@ def thumbnail(filename, thumbname, size, crop=None, bg=None, quality=85):
         img.save(thumb_filename, image.format, quality=quality)
 
         return thumb_url
+
+@current_app.template_filter()
+def price(price):
+    '''Return price value CSS formated'''
+    p = str(price)
+    p = p.split('.')
+    
+    if not len(p) > 1:
+        decimals = '00'
+    else:
+        decimals = p[1][:2]
+
+    return '%s<span class="price-decimals">.%s</span>' % (p[0], decimals)
