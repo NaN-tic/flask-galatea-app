@@ -14,6 +14,7 @@ MEDIA_FOLDER = '/home/www/media'
 MEDIA_URL = '/media/'
 MEDIA_CACHE_FOLDER = '/home/www/media/cache'
 MEDIA_CACHE_URL = '/media/cache/'
+BASE_IMAGE = '/static/catalog-base.png'
 
 ACTIVE_LOGIN = True
 ACTIVE_REGISTRATION = True
@@ -34,7 +35,6 @@ TRYTON_PAGINATION_CATALOG_LIMIT = 20
 TRYTON_CATALOG_GUEST_PRICE = True
 TRYTON_CATALOG_LOGIN_PRICE = True
 TRYTON_CATALOG_MANAGER_PRICE = True
-TRYTON_CATALOG_BASE_IMAGE = '/static/catalog-base.png'
 
 MAIL_SERVER = default 'localhost'
 MAIL_PORT = default 25

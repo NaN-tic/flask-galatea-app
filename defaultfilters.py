@@ -66,7 +66,7 @@ def thumbnail(filename, thumbname, size, crop=None, bg=None, quality=85):
         try:
             image = Image.open(original_filename)  
         except IOError:
-            return None
+            return current_app.config['BASE_IMAGE']
 
         if crop == 'fit':
             img = ImageOps.fit(image, thumb_size, Image.ANTIALIAS)
