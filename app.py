@@ -5,7 +5,7 @@ import os
 import subprocess
 import ConfigParser
 
-from flask import Flask, render_template, request, g, send_from_directory
+from flask import Flask, render_template, request, g, send_from_directory, url_for
 from flask.ext.babel import Babel, gettext as _
 from flask.ext.cache import Cache
 
@@ -119,6 +119,40 @@ def server_error(e):
 def index():
     '''Home'''
     return render_template('index.html')
+
+@app.route('/sitemap.xml')
+@tryton.transaction()
+@cache.cached(timeout=6000, key_prefix="sitemap")
+def sitemap():
+    '''Sitemap: Generate Sitemap XML'''
+    galatea_website = app.config.get('TRYTON_GALATEA_SITE')
+    shops = app.config.get('TRYTON_SALE_SHOPS')
+
+    Article = tryton.pool.get('galatea.cms.article')
+    Template = tryton.pool.get('product.template')
+
+    locs = []
+    # Articles
+    articles = Article.search_read([
+        ('active', '=', True),
+        ('galatea_website', '=', galatea_website),
+        ], fields_names = ['slug_langs'])
+    for article in articles:
+        for k, v in article['slug_langs'].items():
+            locale = k[:2]
+            locs.append(url_for('cms.article', lang=locale, slug=v))
+
+    # Products
+    products = Template.search_read([
+        ('esale_active', '=', True),
+        ('esale_saleshops', 'in', shops),
+        ], fields_names = ['esale_slug_langs'])
+    for product in products:
+        for k, v in product['esale_slug_langs'].items():
+            locale = k[:2]
+            locs.append(url_for('catalog.product_'+locale, lang=locale, slug=v))
+
+    return render_template('sitemap.xml', locs=locs)
 
 @app.route('/media/cache/<filename>')
 def media_file(filename):
