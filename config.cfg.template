@@ -9,6 +9,8 @@ ACCEPT_LANGUAGES = {'en_US': 'English', 'es_ES': 'Spanish', 'ca_ES': 'Catalan'}
 BASE_URL = 'http://localhost:5000'
 AUTHOR = 'Zikzakmedia'
 SECRET_KEY = '1234567890'
+THEME = 'default'
+MINIFY = True
 
 MEDIA_FOLDER = '/home/www/media'
 MEDIA_URL = '/media/'

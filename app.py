@@ -7,6 +7,8 @@ import ConfigParser
 from flask import Flask, render_template, request, g, send_from_directory
 from flask.ext.babel import Babel, gettext as _
 
+path = os.path.dirname(os.path.realpath(__file__))
+
 def get_config():
     '''Get configuration from cfg file'''
     conf_file = '%s/config.ini' % os.path.dirname(os.path.realpath(__file__))
@@ -44,13 +46,26 @@ def get_languages():
         return None
     return [k.split('_')[0] for k, v in languages.iteritems()]
 
-conf_file = '%s/config.cfg' % os.path.dirname(os.path.realpath(__file__))
+def minify():
+    os.system("python minify.py --all "
+        "--csspath '%(path)s/static/%(theme)s/css/' "
+        "--jspath '%(path)s/static/%(theme)s/js/' "
+        "--opath '%(path)s/static/'" % {
+            'path': path,
+            'theme': app.config.get('THEME'),
+            })
+
+conf_file = '%s/config.cfg' % path
 
 app = create_app(conf_file)
 app.config['BABEL_DEFAULT_LOCALE'] = get_default_lang()
 app.root_path = os.path.dirname(os.path.abspath(__file__))
 
 babel = Babel(app)
+
+if not app.debug:
+    if app.config['MINIFY']:
+        minify()
 
 # tryton transaction
 ctx = app.app_context()
