@@ -2,6 +2,7 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 import os
+import subprocess
 import ConfigParser
 
 from flask import Flask, render_template, request, g, send_from_directory
@@ -48,13 +49,13 @@ def get_languages():
     return [k.split('_')[0] for k, v in languages.iteritems()]
 
 def minify():
-    os.system("python minify.py --all "
+    subprocess.call("python minify.py --all "
         "--csspath '%(path)s/static/%(theme)s/css/' "
         "--jspath '%(path)s/static/%(theme)s/js/' "
         "--opath '%(path)s/static/'" % {
             'path': path,
             'theme': app.config.get('THEME'),
-            })
+            }, shell=True)
 
 conf_file = '%s/config.cfg' % path
 
