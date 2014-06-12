@@ -11,6 +11,9 @@ AUTHOR = 'Zikzakmedia'
 SECRET_KEY = '1234567890'
 THEME = 'default'
 MINIFY = True
+CACHE_TYPE = 'filesystem'
+CACHE_DIR = '/tmp/cache'
+CACHE_TIMEOUT = 3600
 
 MEDIA_FOLDER = '/home/www/media'
 MEDIA_URL = '/media/'
