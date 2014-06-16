@@ -25,6 +25,9 @@ def cms_processor():
 
         Menu = tryton.pool.get('galatea.cms.menu')
 
+        login = session.get('logged_in')
+        manager = session.get('manager')
+
         # Search by code
         menus = Menu.search([('code', '=', code)])
         if not menus:
@@ -35,6 +38,10 @@ def cms_processor():
 
             childs = []
             for m in menu.childs:
+                if m.login and not login:
+                    continue
+                if m.manager and not manager:
+                    continue
                 childs.append(get_menus(m))
             return {'name': menu.name, 'slug': menu.slug, 'childs': childs}
         menu = get_menus(menu)
