@@ -123,6 +123,27 @@ def cms_processor():
         elif block['type'] == 'custom_code':
             return block['custom_code']
 
+    def carousel(code=None):
+        """
+        Return object values carousel by code
+        
+        HTML usage in template:
+
+        {% from "_helpers.html" import render_carousel %}
+        {% set carousel=cms_carousel('test') %}{{ render_carousel(carousel) }}
+        """
+        if not code:
+            return None
+
+        Carousel = tryton.pool.get('galatea.cms.carousel')
+
+        # Search by code
+        carousels = Carousel.search([('code', '=', code)])
+        if not carousels:
+            return None
+        carousel, = carousels
+        return carousel
+
     def show_price():
         guest_price = current_app.config.get('TRYTON_CATALOG_GUEST_PRICE')
         login_price = current_app.config.get('TRYTON_CATALOG_LOGIN_PRICE')
@@ -174,4 +195,10 @@ def cms_processor():
 
         return menu['childs']
 
-    return dict(cms_menu=menu, cms_block=block, show_price=show_price, catalog_menu=catalog_menu)
+    return dict(
+        cms_menu=menu,
+        cms_block=block,
+        cms_carousel=carousel,
+        show_price=show_price,
+        catalog_menu=catalog_menu,
+        )
