@@ -22,7 +22,9 @@ MEDIA_CACHE_URL = '/media/cache/'
 BASE_IMAGE = '/static/catalog-base.png'
 
 ACTIVE_LOGIN = True
+REDIRECT_AFTER_LOGIN = 'index'
 ACTIVE_REGISTRATION = True
+REDIRECT_AFTER_LOGOUT = 'index'
 LEN_PASSWORD = 6
 REGISTRATION_VAT = True
 DEFAULT_COUNTRY = 'es'
