@@ -23,6 +23,7 @@ BASE_IMAGE = '/static/catalog-base.png'
 
 ACTIVE_LOGIN = True
 REDIRECT_AFTER_LOGIN = 'index'
+LOGIN_EXTRA_FIELDS = ['show_price']
 ACTIVE_REGISTRATION = True
 REDIRECT_AFTER_LOGOUT = 'index'
 LEN_PASSWORD = 6

@@ -153,6 +153,9 @@ def cms_processor():
         # guest users
         if guest_price:
             return True
+        # user show_price
+        if not show_price and (login_price and not session.get('show_price')):
+            return False
         # login users
         if not show_price and (login_price and session.get('logged_in')):
             return True
