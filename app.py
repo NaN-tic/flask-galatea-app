@@ -7,7 +7,7 @@ import ConfigParser
 
 from flask import Flask, render_template, request, g, send_from_directory, url_for
 from flask.ext.babel import Babel, gettext as _
-from flask.ext.cache import Cache
+from werkzeug.contrib.cache import FileSystemCache
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -63,21 +63,20 @@ app = create_app(conf_file)
 app.config['BABEL_DEFAULT_LOCALE'] = get_default_lang()
 app.root_path = os.path.dirname(os.path.abspath(__file__))
 
-if app.debug:
-    app.config["CACHE_TYPE"] = "null"
-    app.config["CACHE_NO_NULL_WARNING"] = True
 if not app.debug:
     if app.config['MINIFY']:
         minify()
 
 babel = Babel(app)
-cache = Cache(app)
-cache.clear()
+app.cache = FileSystemCache(cache_dir=app.config['CACHE_DIR'], default_timeout=app.config['CACHE_TIMEOUT'])
 
 # tryton transaction
 ctx = app.app_context()
 ctx.push()
 from galatea.tryton import tryton
+
+from galatea.sessions import GalateaSessionInterface
+app.session_interface = GalateaSessionInterface()
 
 # register Blueprints - modules
 from galatea import galatea
@@ -122,7 +121,6 @@ def index():
 
 @app.route('/sitemap.xml')
 @tryton.transaction()
-@cache.cached(timeout=6000, key_prefix="sitemap")
 def sitemap():
     '''Sitemap: Generate Sitemap XML'''
     galatea_website = app.config.get('TRYTON_GALATEA_SITE')

@@ -3,7 +3,6 @@ Flask-WTF>=0.8.3
 flask_tryton>=0.1
 Flask-paginate
 Flask-Mail
-Flask-Cache
 flask-lesscss
 py-wikimarkup
 Pillow==2.2.1
