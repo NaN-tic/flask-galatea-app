@@ -78,6 +78,8 @@ from galatea.tryton import tryton
 from galatea.sessions import GalateaSessionInterface
 app.session_interface = GalateaSessionInterface()
 
+from galatea.helpers import cached
+
 # register Blueprints - modules
 from galatea import galatea
 app.register_blueprint(galatea, url_prefix='/<lang>')
@@ -121,6 +123,7 @@ def index():
 
 @app.route('/sitemap.xml')
 @tryton.transaction()
+@cached(3500, 'sitemap')
 def sitemap():
     '''Sitemap: Generate Sitemap XML'''
     galatea_website = app.config.get('TRYTON_GALATEA_SITE')
