@@ -38,7 +38,6 @@ class GalateaSessionStore(SessionStore):
         """
         Updates the session
         """
-        print "fem un update de session"
         current_app.cache.set(
             session.sid, dict(session), 30 * 24 * 60 * 60
         )
@@ -53,10 +52,7 @@ class GalateaSessionStore(SessionStore):
         """
         Returns session
         """
-        print "este al get"
-        print self.is_valid_key(sid)
         if not self.is_valid_key(sid):
-            #~ print "estem a not valid key"
             return self.new()
         session_data = current_app.cache.get(sid)
         if session_data is None:
@@ -83,13 +79,9 @@ class GalateaSessionInterface(SessionInterface):
         :param request: an instance of :attr:`request_class`.
         """
         sid = request.cookies.get(app.session_cookie_name, None)
-        print "===========sid"
-        print sid
         if sid:
-            print "get"
             return self.session_store.get(sid)
         else:
-            print "new"
             return self.session_store.new()
 
     def save_session(self, app, session, response):
