@@ -43,7 +43,12 @@ def cms_processor():
                 if m.manager and not manager:
                     continue
                 childs.append(get_menus(m))
-            return {'name': menu.name, 'slug': menu.slug, 'childs': childs}
+            return {
+                'name': menu.name,
+                'slug': menu.slug,
+                'childs': childs,
+                'nofollow': menu.nofollow,
+                }
         menu = get_menus(menu)
 
         return menu['childs']
