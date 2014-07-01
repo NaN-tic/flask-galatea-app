@@ -143,6 +143,7 @@ def state(state):
         'paid': _('Paid'),
         'received': _('Received'),
         'assigned': _('Assigned'),
+        'pending': _('Pending'),
         }
     return states[state] if states.get(state) else state
 
