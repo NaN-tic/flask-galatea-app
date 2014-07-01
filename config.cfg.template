@@ -36,7 +36,6 @@ TRYTON_USER = '1'
 TRYTON_CONFIG = '/etc/trytond.conf'
 
 TRYTON_GALATEA_SITE = 1
-TRYTON_DATA_PATH = '/home/trytondata/database'
 TRYTON_SALE_SHOPS = [1]
 TRYTON_LOCATIONS = [4]
 TRYTON_ATTACHMENT_RESOURCE = ['product.template', 'sale.sale']
