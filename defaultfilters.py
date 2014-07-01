@@ -2,8 +2,11 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from flask import current_app
+from flask.ext.babel import format_datetime, format_date, gettext as _
 from jinja2 import evalcontextfilter, Markup, escape
+from trytond.config import CONFIG as tryton_config
 from wikimarkup import parse as wikiparse
+from decimal import Decimal
 
 import re
 import os
@@ -54,7 +57,7 @@ def thumbnail(filename, thumbname, size, crop=None, bg=None, quality=85):
 
     miniature = _get_name(name, fm, size, crop, bg, quality)
     
-    original_filename = os.path.join(current_app.config['TRYTON_DATA_PATH'], filename[0:2], filename[2:4], filename)
+    original_filename = os.path.join(tryton_config['data_path'], current_app.config['TRYTON_DATABASE'], filename[0:2], filename[2:4], filename)
     thumb_filename = os.path.join(current_app.config['MEDIA_CACHE_FOLDER'], miniature)
 
     thumb_url = os.path.join(current_app.config['MEDIA_CACHE_URL'], miniature)
@@ -85,6 +88,9 @@ def thumbnail(filename, thumbname, size, crop=None, bg=None, quality=85):
 @current_app.template_filter()
 def price(price):
     '''Return price value CSS formated'''
+    if not price:
+        return ''
+    price = Decimal("%0.2f" % (price))
     p = str(price)
     p = p.split('.')
     
@@ -99,3 +105,48 @@ def price(price):
 def wikimarkup(text, show_toc=False):
     '''Return html text from wiki format'''
     return wikiparse(text, show_toc)
+
+@current_app.template_filter()
+def dateformat(value, format='medium'):
+    '''Return date time to format
+
+    date|dateformat
+    date|dateformat('full')
+    date|dateformat('short')
+    date|dateformat('dd mm yyyy')
+    '''
+    return format_date(value, format)
+
+@current_app.template_filter()
+def datetimeformat(value, format='medium'):
+    '''Return date time to format
+
+    datetime|datetimeformat
+    datetime|datetimeformat('full')
+    datetime|datetimeformat('short')
+    datetime|datetimeformat('dd mm yyyy')
+    '''
+    return format_datetime(value, format)
+
+@current_app.template_filter()
+def state(state):
+    '''Return state value from key'''
+    states = {
+        'draft': _('Draft'),
+        'quotation': _('Quotation'),
+        'confirmed': _('Confirmed'),
+        'processing': _('Processing'),
+        'done': _('Done'),
+        'cancel': _('Canceled'),
+        'validated': _('Validated'),
+        'posted': _('Posted'),
+        'paid': _('Paid'),
+        'received': _('Received'),
+        'assigned': _('Assigned'),
+        }
+    return states[state] if states.get(state) else state
+
+@current_app.template_filter()
+def quantity(qty):
+    '''Return qty and decimals'''
+    return Decimal("%0.0f" % (qty))
