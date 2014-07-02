@@ -144,6 +144,9 @@ def state(state):
         'received': _('Received'),
         'assigned': _('Assigned'),
         'pending': _('Pending'),
+        'assigned': _('Assigned'),
+        'packed': _('Packed'),
+        'waiting': _('Waiting'),
         }
     return states[state] if states.get(state) else state
 
