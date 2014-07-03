@@ -79,6 +79,7 @@ from galatea.sessions import GalateaSessionInterface
 app.session_interface = GalateaSessionInterface()
 
 from galatea.helpers import cached
+from galatea.utils import get_tryton_locale
 
 # register Blueprints - modules
 from galatea import galatea
@@ -111,6 +112,12 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('500.html'), 500
+
+@tryton.default_context
+def default_context():
+    context = {}
+    context['language'] = get_tryton_locale(g.language)
+    return context
 
 @app.route('/')
 @app.route("/en/", endpoint="en")
