@@ -3,7 +3,7 @@
 #the full copyright notices and license terms.
 from flask import current_app
 from flask.ext.babel import format_datetime, format_date, gettext as _
-from jinja2 import evalcontextfilter, Markup, escape
+from jinja2 import evalcontextfilter, Markup, escape, Template, filters
 from trytond.config import CONFIG as tryton_config
 from wikimarkup import parse as wikiparse
 from decimal import Decimal
@@ -102,9 +102,89 @@ def price(price):
     return '%s<span class="price-decimals">.%s</span>' % (p[0], decimals)
 
 @current_app.template_filter()
+def youtube(yid, size="normal"):
+    '''Return embed Youtube
+
+    {{ "9bJuEy2fHwQ"|youtube }}
+    {{ "9bJuEy2fHwQ"|youtube('small') }}
+    {{ "9bJuEy2fHwQ"|youtube('large') }}
+    '''
+    CODE = """<iframe width="%(width)s" height="%(height)s"
+    src="//www.youtube.com/embed/%(yid)s?rel=0&amp;hd=1&amp;wmode=transparent">
+    </iframe>"""
+    s = {
+        'small': {'width': '425', 'height': '344'},
+        'normal': {'width': '560', 'height': '315'},
+        'large': {'width': '1280', 'height': '720'},
+        }
+    if not s.get(size):
+        size = 'normal'
+    return CODE % {
+        'yid': yid,
+        'width': s.get(size).get('width'),
+        'height': s.get(size).get('height'),
+        }
+filters.FILTERS['youtube'] = youtube
+
+@current_app.template_filter()
+def vimeo(vid, size="normal"):
+    '''Return embed Vimeo
+
+    {{ "61619702"|vimeo }}
+    {{ "61619702"|vimeo('small') }}
+    {{ "61619702"|vimeo('large') }}
+    '''
+    CODE = """<iframe src="//player.vimeo.com/video/%(vid)s"
+    width="%(width)s" height="%(height)s"
+    frameborder="0" webkitAllowFullScreen="webkitAllowFullScreen"
+    mozallowfullscreen="mozallowfullscreen" allowFullScreen="allowFullScreen">
+    </iframe>"""
+    s = {
+        'small': {'width': '425', 'height': '239'},
+        'normal': {'width': '560', 'height': '315'},
+        'large': {'width': '1280', 'height': '719'},
+        }
+    if not s.get(size):
+        size = 'normal'
+    return CODE % {
+        'vid': vid,
+        'width': s.get(size).get('width'),
+        'height': s.get(size).get('height'),
+        }
+filters.FILTERS['vimeo'] = vimeo
+
+@current_app.template_filter()
+def slideshare(slid, size="normal"):
+    '''Return embed Slideshare
+
+    {{ "28069836"|slideshare }}
+    {{ "28069836"|slideshare('small') }}
+    {{ "28069836"|slideshare('large') }}
+    '''
+    CODE = """<iframe src="//www.slideshare.net/slideshow/embed_code/%(slid)s"
+    width="%(width)s" height="%(height)s"
+    frameborder="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen>
+    </iframe>"""
+    s = {
+        'small': {'width': '429', 'height': '357'},
+        'normal': {'width': '514', 'height': '422'},
+        'large': {'width': '599', 'height': '487'},
+        }
+    if not s.get(size):
+        size = 'normal'
+    return CODE % {
+        'slid': slid,
+        'width': s.get(size).get('width'),
+        'height': s.get(size).get('height'),
+        }
+filters.FILTERS['slideshare'] = slideshare
+
+@current_app.template_filter()
 def wikimarkup(text, show_toc=False):
     '''Return html text from wiki format'''
-    return wikiparse(text, show_toc)
+    text = wikiparse(text, show_toc)
+    t = Template(text)
+    return t.render()
 
 @current_app.template_filter()
 def dateformat(value, format='medium'):
