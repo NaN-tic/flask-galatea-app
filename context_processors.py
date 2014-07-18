@@ -48,6 +48,7 @@ def cms_processor():
                 'slug': menu.slug,
                 'childs': childs,
                 'nofollow': menu.nofollow,
+                'icon': menu.icon,
                 }
         menu = get_menus(menu)
 
