@@ -5,9 +5,11 @@ import os
 import subprocess
 import ConfigParser
 
-from flask import Flask, render_template, request, g, send_from_directory, url_for
+from flask import Flask, render_template, request, g, send_from_directory, \
+    url_for, session
 from flask.ext.babel import Babel, gettext as _
 from werkzeug.contrib.cache import FileSystemCache
+from werkzeug.contrib.fixers import ProxyFix
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -78,8 +80,8 @@ from galatea.tryton import tryton
 from galatea.sessions import GalateaSessionInterface
 app.session_interface = GalateaSessionInterface()
 
-from galatea.helpers import cached
-from galatea.utils import get_tryton_locale
+from galatea.helpers import cached, login_required
+from galatea.utils import get_tryton_language, get_tryton_locale
 
 # register Blueprints - modules
 from galatea import galatea
@@ -116,7 +118,13 @@ def server_error(e):
 @tryton.default_context
 def default_context():
     context = {}
-    context['language'] = get_tryton_locale(g.language)
+    context['language'] = get_tryton_language(g.language)
+    context['locale'] = get_tryton_locale(g.language)
+    context['company'] = app.config.get('TRYTON_COMPANY')
+    context['shop'] = app.config.get('TRYTON_SALE_SHOP')
+    context['shops'] = app.config.get('TRYTON_SALE_SHOPS')
+    context['locations'] = app.config.get('TRYTON_LOCATIONS')
+    context['customer'] = session.get('customer', None)
     return context
 
 @app.route('/')
@@ -165,6 +173,8 @@ def sitemap():
 @app.route('/media/cache/<filename>')
 def media_file(filename):
     return send_from_directory(app.config['MEDIA_CACHE_FOLDER'], filename)
+
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == "__main__":
     app.run()
