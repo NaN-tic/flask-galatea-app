@@ -50,24 +50,11 @@ def get_languages():
         return None
     return [k.split('_')[0] for k, v in languages.iteritems()]
 
-def minify():
-    subprocess.call("python minify.py --all "
-        "--csspath '%(path)s/static/%(theme)s/css/' "
-        "--jspath '%(path)s/static/%(theme)s/js/' "
-        "--opath '%(path)s/static/'" % {
-            'path': path,
-            'theme': app.config.get('THEME'),
-            }, shell=True)
-
 conf_file = '%s/config.cfg' % path
 
 app = create_app(conf_file)
 app.config['BABEL_DEFAULT_LOCALE'] = get_default_lang()
 app.root_path = os.path.dirname(os.path.abspath(__file__))
-
-if not app.debug:
-    if app.config['MINIFY']:
-        minify()
 
 babel = Babel(app)
 app.cache = FileSystemCache(cache_dir=app.config['CACHE_DIR'], default_timeout=app.config['CACHE_TIMEOUT'])
