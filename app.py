@@ -2,8 +2,10 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 import os
-import subprocess
 import ConfigParser
+import time
+import datetime
+import pytz
 
 from flask import Flask, render_template, request, g, send_from_directory, \
     url_for, session
@@ -12,6 +14,10 @@ from werkzeug.contrib.cache import FileSystemCache
 from werkzeug.contrib.fixers import ProxyFix
 
 path = os.path.dirname(os.path.realpath(__file__))
+
+os.environ['TZ'] = 'UTC'
+if hasattr(time, 'tzset'):
+    time.tzset()
 
 def get_config():
     '''Get configuration from cfg file'''
@@ -56,6 +62,10 @@ app = create_app(conf_file)
 app.config['BABEL_DEFAULT_LOCALE'] = get_default_lang()
 app.root_path = os.path.dirname(os.path.abspath(__file__))
 
+TIMEZONE = None
+if app.config.get('TIMEZONE'):
+    TIMEZONE = pytz.timezone(app.config.get('TIMEZONE'))
+
 babel = Babel(app)
 app.cache = FileSystemCache(cache_dir=app.config['CACHE_DIR'], default_timeout=app.config['CACHE_TIMEOUT'])
 
@@ -92,6 +102,8 @@ def get_locale():
 def func():
     g.babel = babel
     g.language = get_locale()
+    g.today = datetime.datetime.now(TIMEZONE).date()
+    g.now = datetime.datetime.now(TIMEZONE)
 
 @app.errorhandler(404)
 @tryton.transaction()
