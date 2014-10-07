@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, g, send_from_directory, \
 from flask.ext.babel import Babel, gettext as _
 from werkzeug.contrib.cache import FileSystemCache
 from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.debug import DebuggedApplication
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -71,6 +72,9 @@ if not app.debug:
 
 babel = Babel(app)
 app.cache = FileSystemCache(cache_dir=app.config['CACHE_DIR'], default_timeout=app.config['CACHE_TIMEOUT'])
+
+if app.config.get('DEBUG'):
+    app.wsgi_app = DebuggedApplication(app.wsgi_app, True)
 
 # tryton transaction
 ctx = app.app_context()
