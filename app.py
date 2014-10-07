@@ -2,8 +2,10 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 import os
-import subprocess
 import ConfigParser
+import time
+import datetime
+import pytz
 
 from flask import Flask, render_template, request, g, send_from_directory, \
     url_for, session
@@ -13,6 +15,10 @@ from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.debug import DebuggedApplication
 
 path = os.path.dirname(os.path.realpath(__file__))
+
+os.environ['TZ'] = 'UTC'
+if hasattr(time, 'tzset'):
+    time.tzset()
 
 def get_config():
     '''Get configuration from cfg file'''
@@ -51,24 +57,15 @@ def get_languages():
         return None
     return [k.split('_')[0] for k, v in languages.iteritems()]
 
-def minify():
-    subprocess.call("python minify.py --all "
-        "--csspath '%(path)s/static/%(theme)s/css/' "
-        "--jspath '%(path)s/static/%(theme)s/js/' "
-        "--opath '%(path)s/static/'" % {
-            'path': path,
-            'theme': app.config.get('THEME'),
-            }, shell=True)
-
 conf_file = '%s/config.cfg' % path
 
 app = create_app(conf_file)
 app.config['BABEL_DEFAULT_LOCALE'] = get_default_lang()
 app.root_path = os.path.dirname(os.path.abspath(__file__))
 
-if not app.debug:
-    if app.config['MINIFY']:
-        minify()
+TIMEZONE = None
+if app.config.get('TIMEZONE'):
+    TIMEZONE = pytz.timezone(app.config.get('TIMEZONE'))
 
 babel = Babel(app)
 app.cache = FileSystemCache(cache_dir=app.config['CACHE_DIR'], default_timeout=app.config['CACHE_TIMEOUT'])
@@ -109,6 +106,8 @@ def get_locale():
 def func():
     g.babel = babel
     g.language = get_locale()
+    g.today = datetime.datetime.now(TIMEZONE).date()
+    g.now = datetime.datetime.now(TIMEZONE)
 
 @app.errorhandler(404)
 @tryton.transaction()

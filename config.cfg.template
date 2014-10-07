@@ -15,6 +15,7 @@ MINIFY = True
 CACHE_TYPE = 'filesystem'
 CACHE_DIR = '/tmp/cache'
 CACHE_TIMEOUT = 3600
+TIMEZONE = 'Europe/Madrid'
 
 MEDIA_FOLDER = '/home/www/media'
 MEDIA_URL = '/media/'
