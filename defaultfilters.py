@@ -102,6 +102,39 @@ def price(price):
     return '%s<span class="price-decimals">.%s</span>' % (p[0], decimals)
 
 @current_app.template_filter()
+def video(url):
+    '''Return embed video or link
+
+    {{ "http://vimeo.com/61619702"|video|safe }}
+    {{ product.template_attributes.get('video')|video|safe }}
+    '''
+    # youtube
+    if url.startswith('http://www.youtu.be/') or \
+            url.startswith('http://youtu.be/') or \
+            url.startswith('http://youtube.com/') or \
+            url.startswith('http://www.youtube.com/'):
+        code = url.split('/')[-1]
+        html = '<iframe width="420" height="315" ' \
+            'src="//www.youtube.com/embed/%s" ' \
+            'frameborder="0" allowfullscreen></iframe>' % (code)
+        return html
+
+    # vimeo
+    if url.startswith('http://www.vimeo.com/') or \
+            url.startswith('http://vimeo.com/'):
+        code = url.split('/')[-1]
+        html = '<iframe src="//player.vimeo.com/video/%(vid)s" ' \
+            'width="425" height="239" ' \
+            'frameborder="0" webkitAllowFullScreen="webkitAllowFullScreen" ' \
+            'mozallowfullscreen="mozallowfullscreen" ' \
+            'allowFullScreen="allowFullScreen"></iframe>' % (code)
+        return html
+
+    # unknown
+    html = '<a href="%(url)s" title="%(url)s">%(url)s</a>' % {'url': url}
+    return html
+
+@current_app.template_filter()
 def youtube(yid, size="normal"):
     '''Return embed Youtube
 
