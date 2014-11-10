@@ -6,6 +6,7 @@ import ConfigParser
 import time
 import datetime
 import pytz
+import logging
 
 from flask import Flask, render_template, request, g, send_from_directory, \
     url_for, session
@@ -13,6 +14,7 @@ from flask.ext.babel import Babel, gettext as _
 from werkzeug.contrib.cache import FileSystemCache
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.debug import DebuggedApplication
+from logging.handlers import SMTPHandler
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -178,6 +180,16 @@ def media_file(filename):
     return send_from_directory(app.config['MEDIA_CACHE_FOLDER'], filename)
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
+
+if not app.debug:
+    mail_handler = SMTPHandler(mailhost=app.config.get('MAIL_SERVER'),
+                            fromaddr=app.config.get('DEFAULT_MAIL_SENDER'),
+                            toaddrs=app.config.get('ADMINS'),
+                            subject='Flask %s Failed' % app.config.get('TITLE'),
+                            credentials=app.config.get('MAIL_CREDENTIALS', None),
+                            secure=app.config.get('MAIL_SECURE', None))
+    mail_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(mail_handler)
 
 if __name__ == "__main__":
     app.run()
