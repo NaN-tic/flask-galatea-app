@@ -210,11 +210,6 @@ def cms_processor():
                 level += 1
                 for m in menu.childs:
                     childs.append(get_menus(m, levels, level))
-
-            template = menu.cimbis_template
-            basedir = os.path.dirname(__file__)
-            if not os.path.isfile('%s/templates/%s.html' % (basedir, template)):
-                template = None
             return {
                 'id': menu.id,
                 'name': menu.name,
