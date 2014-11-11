@@ -7,7 +7,7 @@ from galatea.tryton import tryton
 @current_app.context_processor
 def cms_processor():
 
-    def menu(code=None):
+    def menu(code=None, levels=9999):
         """
         Return object values menu by code
         
@@ -29,28 +29,35 @@ def cms_processor():
         manager = session.get('manager')
 
         # Search by code
-        menus = Menu.search([('code', '=', code)])
+        menus = Menu.search([
+            ('code', '=', code),
+            ], limit=1)
         if not menus:
             return []
         menu, = menus
 
-        def get_menus(menu):
-
+        def get_menus(menu, levels, level=0):
             childs = []
-            for m in menu.childs:
-                if m.login and not login:
-                    continue
-                if m.manager and not manager:
-                    continue
-                childs.append(get_menus(m))
+            if level < levels:
+                level += 1
+                for m in menu.childs:
+                    if m.login and not login:
+                        continue
+                    if m.manager and not manager:
+                        continue
+                    childs.append(get_menus(m, levels, level))
             return {
+                'id': menu.id,
                 'name': menu.name,
                 'slug': menu.slug,
                 'childs': childs,
                 'nofollow': menu.nofollow,
                 'icon': menu.icon,
+                'css': menu.css,
                 }
-        menu = get_menus(menu)
+
+        menu = get_menus(menu, levels)
+        return menu['childs']
 
         return menu['childs']
 
@@ -170,7 +177,7 @@ def cms_processor():
             return True
         return show_price
 
-    def catalog_menu(slug=None):
+    def catalog_menu(slug=None, levels=9999):
         """
         Return object values catalog menu by slug
         
@@ -189,19 +196,33 @@ def cms_processor():
         Menu = tryton.pool.get('esale.catalog.menu')
 
         # Search by code
-        menus = Menu.search([('slug', '=', slug)])
+        menus = Menu.search([
+            ('slug', '=', slug),
+            ('website', '=', GALATEA_WEBSITE),
+            ], limit=1)
         if not menus:
             return []
         menu, = menus
 
-        def get_menus(menu):
-
+        def get_menus(menu, levels, level=0):
             childs = []
-            for m in menu.childs:
-                childs.append(get_menus(m))
-            return {'name': menu.name, 'slug': menu.slug, 'childs': childs}
-        menu = get_menus(menu)
+            if level < levels:
+                level += 1
+                for m in menu.childs:
+                    childs.append(get_menus(m, levels, level))
 
+            template = menu.cimbis_template
+            basedir = os.path.dirname(__file__)
+            if not os.path.isfile('%s/templates/%s.html' % (basedir, template)):
+                template = None
+            return {
+                'id': menu.id,
+                'name': menu.name,
+                'slug': menu.slug,
+                'childs': childs,
+                }
+
+        menu = get_menus(menu, levels)
         return menu['childs']
 
     return dict(
