@@ -157,26 +157,6 @@ def cms_processor():
         carousel, = carousels
         return carousel
 
-    def show_price():
-        guest_price = current_app.config.get('TRYTON_CATALOG_GUEST_PRICE')
-        login_price = current_app.config.get('TRYTON_CATALOG_LOGIN_PRICE')
-        manager_price = current_app.config.get('TRYTON_CATALOG_MANAGER_PRICE')
-
-        show_price = False
-        # guest users
-        if guest_price:
-            return True
-        # user show_price
-        if not show_price and (login_price and not session.get('show_price')):
-            return False
-        # login users
-        if not show_price and (login_price and session.get('logged_in')):
-            return True
-        # manager users
-        if not show_price and (manager_price and session.get('manager')):
-            return True
-        return show_price
-
     def catalog_menu(slug=None, levels=9999):
         """
         Return object values catalog menu by slug
@@ -224,6 +204,5 @@ def cms_processor():
         cms_menu=menu,
         cms_block=block,
         cms_carousel=carousel,
-        show_price=show_price,
         catalog_menu=catalog_menu,
         )
