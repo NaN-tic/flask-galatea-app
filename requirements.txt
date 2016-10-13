@@ -1,3 +1,4 @@
+Flask>=0.11.0
 Flask-Babel>=0.8
 Flask-WTF>=0.8.3
 flask_tryton>=0.1
