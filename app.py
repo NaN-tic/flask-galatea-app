@@ -10,7 +10,7 @@ import logging
 
 from flask import Flask, render_template, request, g, send_from_directory, \
     url_for, session
-from flask.ext.babel import Babel, gettext as _
+from flask_babel import Babel, gettext as _
 from werkzeug.contrib.cache import FileSystemCache
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.debug import DebuggedApplication

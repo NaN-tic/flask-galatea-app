@@ -2,7 +2,7 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from flask import current_app
-from flask.ext.babel import format_datetime, format_date, gettext as _
+from flask_babel import format_datetime, format_date, gettext as _
 from jinja2 import evalcontextfilter, Markup, escape, Template, filters
 from trytond.config import CONFIG as tryton_config
 from wikimarkup import parse as wikiparse
